@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0D0D0D; --bg2: #141414; --bg3: #1C1C1C;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #F0EDE8; --muted: #888880;
+    --accent: #D4A96A; --accent2: #7B9E87; --accent3: #C07070;
+    --tag-bg: rgba(212,169,106,0.12); --tag-text: #D4A96A;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'Instrument Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--bg2); border-right: 0.5px solid var(--border); padding: 2rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-logo { padding: 0 1.25rem 1.5rem; border-bottom: 0.5px solid var(--border); margin-bottom: 1rem; }
+  .sidebar-logo span { font-family: var(--font-display); font-size: 17px; color: var(--text); }
+  .sidebar-logo small { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .nav-section { padding: 0 1.25rem 0.5rem; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 1rem; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 1.25rem; font-size: 13px; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all 0.15s; }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(212,169,106,0.07); }
+  .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; flex-shrink: 0; }
+  .main { padding: 3rem 3.5rem; max-width: 800px; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .section-tag { display: inline-block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tag-text); background: var(--tag-bg); padding: 3px 10px; border-radius: 100px; margin-bottom: 1rem; }
+  h1 { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 0.75rem; }
+  h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--text); margin: 2rem 0 0.75rem; }
+  p { color: rgba(240,237,232,0.75); margin-bottom: 1rem; line-height: 1.7; }
+  .lead { font-size: 16px; color: rgba(240,237,232,0.6); margin-bottom: 2rem; line-height: 1.6; }
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.5rem 0; }
+  .card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+  .card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 0.75rem; }
+  .card h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 13px; margin-bottom: 0; }
+  .card.highlight { border-color: rgba(212,169,106,0.3); background: rgba(212,169,106,0.06); }
+  .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+  .step-content h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+  .step-content p { font-size: 13px; margin-bottom: 0.5rem; }
+  .callout { background: var(--bg3); border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+  .callout.green { border-left-color: var(--accent2); }
+  .callout.red { border-left-color: var(--accent3); }
+  .callout.blue { border-left-color: #6B9EC0; }
+  .callout p { margin: 0; font-size: 13px; }
+  .callout strong { color: var(--text); }
+  .model-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 13px; }
+  .model-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 0.5px solid var(--border); font-weight: 500; }
+  .model-table td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); color: rgba(240,237,232,0.7); vertical-align: top; }
+  .model-table tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 100px; font-weight: 500; }
+  .badge-gold { background: rgba(212,169,106,0.15); color: var(--accent); }
+  .badge-green { background: rgba(123,158,135,0.15); color: var(--accent2); }
+  .badge-red { background: rgba(192,112,112,0.15); color: var(--accent3); }
+  .badge-gray { background: rgba(255,255,255,0.08); color: var(--muted); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.5rem 0; }
+  .compare-col ul { list-style: none; padding: 0; }
+  .compare-col li { font-size: 13px; color: rgba(240,237,232,0.7); padding: 4px 0; padding-left: 16px; position: relative; }
+  .compare-col li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 1px; }
+  .compare-col.pros li::before { background: var(--accent2); }
+  .compare-col.cons li::before { background: var(--accent3); }
+  code { font-family: var(--font-mono); font-size: 12px; background: rgba(255,255,255,0.07); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+  .tool-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--accent); text-decoration: none; border: 0.5px solid rgba(212,169,106,0.3); padding: 4px 10px; border-radius: 100px; margin: 4px 4px 4px 0; cursor: pointer; }
+  .tool-link:hover { background: rgba(212,169,106,0.08); }
+  .workflow-row { display: flex; align-items: center; gap: 8px; margin: 1rem 0; flex-wrap: wrap; }
+  .workflow-step { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; color: var(--text); }
+  .workflow-arrow { color: var(--muted); font-size: 16px; }
+  .tip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0; }
+  .tip-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem; }
+  .tip-card .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.5rem; }
+  .tip-card p { font-size: 12px; margin: 0; }
+  .next-btn { margin-top: 3rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .btn { background: transparent; border: 0.5px solid var(--border2); color: var(--text); font-family: var(--font-body); font-size: 13px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .btn:hover { background: rgba(255,255,255,0.05); }
+  .btn.primary { border-color: rgba(212,169,106,0.4); color: var(--accent); }
+  .btn.primary:hover { background: rgba(212,169,106,0.08); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .progress { font-size: 12px; color: var(--muted); }
+  .token-meter { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 1.5rem 0; }
+  .token-bar-wrap { display: flex; gap: 6px; margin: 0.75rem 0; align-items: center; }
+  .token-bar { height: 8px; border-radius: 100px; flex-shrink: 0; }
+  .token-bar-label { font-size: 11px; color: var(--muted); }
+  .connector-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; gap: 1rem; align-items: flex-start; }
+  .connector-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .connector-info h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .connector-info p { font-size: 12px; margin: 0 0 6px; }
+  .warn-box { background: rgba(192,112,112,0.08); border: 0.5px solid rgba(192,112,112,0.25); border-radius: 10px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+  .warn-box p { margin: 0; font-size: 13px; color: rgba(192,112,112,0.9); }
+  .warn-box strong { color: var(--accent3); }
+  .bootstrap-box { background: rgba(107,158,192,0.07); border: 0.5px solid rgba(107,158,192,0.25); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+  .bootstrap-box h4 { font-size: 14px; font-weight: 600; color: #8EC4E8; margin-bottom: 0.5rem; }
+  .bootstrap-box p { font-size: 13px; margin-bottom: 0.75rem; }
+  .bootstrap-box p:last-child { margin-bottom: 0; }
+  .skill-repo-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .skill-repo-card h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .skill-repo-card p { font-size: 12px; margin: 0 0 8px; }
+  .install-steps { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  .install-step { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+  .install-step:last-child { border-bottom: none; }
+  .install-step-num { font-size: 11px; font-weight: 500; color: var(--accent); min-width: 18px; margin-top: 2px; }
+  .install-step p { font-size: 12px; margin: 0; }
+</style>
+</head>
+<body>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Basti's Claude Guide — interactive course covering setup, models, token management, connectors, skills, and Claude Code</h2>
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span>Basti's Claude Guide</span>
+    <small>Quick start course</small>
+  </div>
+  <div class="nav-section">Getting started</div>
+  <div class="nav-item active" onclick="show(0)"><div class="nav-dot"></div> Introduction</div>
+  <div class="nav-item" onclick="show(1)"><div class="nav-dot"></div> Setup</div>
+  <div class="nav-item" onclick="show(2)"><div class="nav-dot"></div> Web vs Desktop</div>
+  <div class="nav-section">Using Claude</div>
+  <div class="nav-item" onclick="show(3)"><div class="nav-dot"></div> Choosing a model</div>
+  <div class="nav-item" onclick="show(4)"><div class="nav-dot"></div> Chat & planning</div>
+  <div class="nav-item" onclick="show(5)"><div class="nav-dot"></div> Research workflow</div>
+  <div class="nav-item" onclick="show(6)"><div class="nav-dot"></div> File & project setup</div>
+  <div class="nav-section">Power features</div>
+  <div class="nav-item" onclick="show(7)"><div class="nav-dot"></div> Token management</div>
+  <div class="nav-item" onclick="show(8)"><div class="nav-dot"></div> Skills & repositories</div>
+  <div class="nav-item" onclick="show(9)"><div class="nav-dot"></div> MCPs & connectors</div>
+  <div class="nav-item" onclick="show(10)"><div class="nav-dot"></div> Claude Code</div>
+  <div class="nav-item" onclick="show(11)"><div class="nav-dot"></div> Tips & habits</div>
+</nav>
+
+<main class="main">
+
+<!-- 0: Intro -->
+<div class="section active" id="s0">
+  <div class="section-tag">Welcome</div>
+  <h1>Basti's Claude Guide</h1>
+  <p class="lead">A practical guide for getting the most out of Claude — whether you've never used it before or you're ready to go deeper with the desktop app, connectors, and power features.</p>
+  <hr class="divider">
+  <div class="bootstrap-box">
+    <h4>Don't want to read? Just do the setup automatically.</h4>
+    <p>There's a one-paste bootstrap prompt that sets up your entire environment — Obsidian vault, skills folder, project structure, and Claude memory — in a single chat. Open Claude, paste it in, and it walks you through everything interactively.</p>
+    <a class="tool-link" href="https://raw.githubusercontent.com/Seabass567/claude-setup/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt</a>
+  </div>
+  <hr class="divider">
+  <h2>What's in this guide</h2>
+  <div class="card-grid">
+    <div class="card highlight">
+      <div class="card-icon" style="background:rgba(212,169,106,0.12);">⚙</div>
+      <h4>Setup</h4>
+      <p>Web app vs desktop, what to install, how to configure your environment from day one.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(123,158,135,0.12);">◎</div>
+      <h4>Choosing models</h4>
+      <p>Opus, Sonnet, Haiku — when to use each and why getting this right matters.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(192,112,112,0.12);">◈</div>
+      <h4>Token management</h4>
+      <p>How Claude burns your credits and exactly how to stop wasting them.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(255,255,255,0.07);">↗</div>
+      <h4>Power features</h4>
+      <p>MCPs, connectors, skills repositories, Claude Code, and more.</p>
+    </div>
+  </div>
+  <div class="next-btn">
+    <button class="btn" disabled>← Previous</button>
+    <span class="progress">1 of 12</span>
+    <button class="btn primary" onclick="show(1)">Setup →</button>
+  </div>
+</div>
+
+<!-- 1: Setup -->
+<div class="section" id="s1">
+  <div class="section-tag">Getting started</div>
+  <h1>Setup</h1>
+  <p class="lead">Get Claude running in the right environment from day one. The choices you make here affect how much you can do later.</p>
+  <div class="bootstrap-box">
+    <h4>Shortcut: auto-setup with the bootstrap prompt</h4>
+    <p>Rather than doing all of this manually, paste the bootstrap prompt into a fresh Claude desktop chat and it will handle steps 2–4 for you automatically — creating your vault structure, skill files, and saving your preferences to memory.</p>
+    <a class="tool-link" href="https://raw.githubusercontent.com/Seabass567/claude-setup/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt (claude-bootstrap.md)</a>
+  </div>
+  <hr class="divider">
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>Create an account</h4>
+      <p>Go to claude.ai and sign up. The free plan gives you access to Sonnet. A Pro plan unlocks Opus, higher limits, and the desktop app.</p>
+      <a class="tool-link" href="https://claude.ai" target="_blank">→ claude.ai</a>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>Download the desktop app (recommended)</h4>
+      <p>Mac and Windows. The desktop app unlocks local file access, connectors, and co-work — things the web app simply can't do.</p>
+      <a class="tool-link" href="https://claude.ai/download" target="_blank">→ claude.ai/download</a>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>Set up a notes system — Obsidian</h4>
+      <p>Obsidian (free) is a local markdown vault. Ask Claude to save project notes as <code>.md</code> files in your vault. This keeps your work AI-platform agnostic — readable anywhere, not locked to Claude.</p>
+      <a class="tool-link" href="https://obsidian.md" target="_blank">→ obsidian.md</a>
+      <p style="margin-top:8px;">Once installed, tell Claude: <em>"Save a memory that my Obsidian vault is at ~/Documents/Vault — use this for all project notes."</em></p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>Optional: voice input</h4>
+      <p>TypeWhisper runs locally and converts speech to text. Useful for longer, more detailed prompts without typing.</p>
+      <a class="tool-link" href="https://typewhisper.app" target="_blank">→ typewhisper.app</a>
+    </div>
+  </div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(0)">← Introduction</button>
+    <span class="progress">2 of 12</span>
+    <button class="btn primary" onclick="show(2)">Web vs Desktop →</button>
+  </div>
+</div>
+
+<!-- 2: Web vs Desktop -->
+<div class="section" id="s2">
+  <div class="section-tag">Getting started</div>
+  <h1>Web app vs desktop app</h1>
+  <p class="lead">Both work. But they're not equal.</p>
+  <hr class="divider">
+  <div class="compare">
+    <div class="card">
+      <h4 style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">Web app</h4>
+      <div class="compare-col pros"><ul>
+        <li>Works on any device, no install</li>
+        <li>Great for quick questions</li>
+        <li>Shareable conversation links</li>
+      </ul></div>
+      <div style="margin-top:1rem;"><div class="compare-col cons"><ul>
+        <li>No local file access</li>
+        <li>No MCP connectors</li>
+        <li>No co-work support</li>
+      </ul></div></div>
+    </div>
+    <div class="card highlight">
+      <h4 style="color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">Desktop app ★ recommended</h4>
+      <div class="compare-col pros"><ul>
+        <li>Access to local files and folders</li>
+        <li>MCP connectors (Gmail, Drive, etc.)</li>
+        <li>Co-work for file and task management</li>
+        <li>Local skill files for reuse</li>
+        <li>Better for ongoing projects</li>
+      </ul></div>
+      <div style="margin-top:1rem;"><div class="compare-col cons"><ul>
+        <li>Requires installation</li>
+        <li>Pro plan for full features</li>
+      </ul></div></div>
+    </div>
+  </div>
+  <div class="callout">
+    <p><strong>Short version:</strong> Use the web app to start. Switch to the desktop app as soon as you're doing real project work.</p>
+  </div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(1)">← Setup</button>
+    <span class="progress">3 of 12</span>
+    <button class="btn primary" onclick="show(3)">Choosing a model →</button>
+  </div>
+</div>
+
+<!-- 3: Models -->
+<div class="section" id="s3">
+  <div class="section-tag">Using Claude</div>
+  <h1>Choosing a model</h1>
+  <p class="lead">Three models. Getting this right affects both quality and cost — significantly.</p>
+  <hr class="divider">
+  <table class="model-table">
+    <thead><tr><th>Model</th><th>Best for</th><th>Speed</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong style="color:var(--text)">Claude Opus</strong><br><span style="font-size:11px;color:var(--muted)">Use sparingly</span></td>
+        <td>Complex planning, strategy, high-stakes decisions only</td>
+        <td><span class="badge badge-red">Slower</span></td>
+        <td><span class="badge badge-red">Highest</span></td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--text)">Claude Sonnet</strong><br><span style="font-size:11px;color:var(--accent2)">★ Your workhorse</span></td>
+        <td>Research, writing, coding, most everyday tasks</td>
+        <td><span class="badge badge-green">Fast</span></td>
+        <td><span class="badge badge-green">Balanced</span></td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--text)">Claude Haiku</strong><br><span style="font-size:11px;color:var(--muted)">Lightweight tasks</span></td>
+        <td>Email replies, summaries, anything low-effort</td>
+        <td><span class="badge badge-gold">Fastest</span></td>
+        <td><span class="badge badge-gold">Lowest</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="warn-box">
+    <p><strong>Use Opus sparingly.</strong> It's expensive and slow. Most tasks that feel like they need Opus actually don't — Sonnet handles the vast majority of work extremely well. Reserve Opus for genuine planning and strategy sessions only. Haiku for email replies, summaries, anything low-effort.</p>
+  </div>
+  <div class="tip-grid">
+    <div class="tip-card"><div class="label">Planning a project</div><p>Opus — but only for the strategy session</p></div>
+    <div class="tip-card"><div class="label">Research</div><p>Sonnet — fast enough, deep enough</p></div>
+    <div class="tip-card"><div class="label">Writing copy</div><p>Sonnet — reliable and consistent</p></div>
+    <div class="tip-card"><div class="label">Replying to emails</div><p>Haiku — low effort, don't waste credits</p></div>
+    <div class="tip-card"><div class="label">Summarising docs</div><p>Haiku — quick and cheap</p></div>
+    <div class="tip-card"><div class="label">Code review</div><p>Sonnet (Opus only if really complex)</p></div>
+  </div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(2)">← Web vs Desktop</button>
+    <span class="progress">4 of 12</span>
+    <button class="btn primary" onclick="show(4)">Chat & planning →</button>
+  </div>
+</div>
+
+<!-- 4: Chat & Planning -->
+<div class="section" id="s4">
+  <div class="section-tag">Using Claude</div>
+  <h1>Chat and planning</h1>
+  <p class="lead">Chat is Claude's default mode. Used well, it's the best planning partner you've had.</p>
+  <hr class="divider">
+  <div class="card-grid">
+    <div class="card"><h4>Map out the problem</h4><p style="font-size:13px;">Describe what you want to build. Ask Claude what assumptions you're making and what you might be missing.</p></div>
+    <div class="card"><h4>Identify the market</h4><p style="font-size:13px;">Competitors, differentiation, technology used — give Claude a clear scope and it'll surface what matters.</p></div>
+    <div class="card"><h4>Break into phases</h4><p style="font-size:13px;">Ask Claude to break a big project into phases with clear deliverables and dependencies.</p></div>
+    <div class="card"><h4>Stress-test the plan</h4><p style="font-size:13px;">Ask: "What are the three most likely reasons this fails?" Worth doing before you commit to a direction.</p></div>
+  </div>
+  <div class="callout">
+    <p><em>"I want to build an app for guitar tuners. Research the existing tools in this space, identify how they work, find the top competitors, and help me understand where I could differentiate. Then help me plan Phase 1."</em></p>
+  </div>
+  <h2>Projects — persistent context</h2>
+  <p>Claude's built-in Projects feature groups related conversations and gives Claude persistent context. Set this up for any ongoing work so you're not re-explaining everything every session.</p>
+  <div class="next-btn">
+    <button class="btn" onclick="show(3)">← Choosing a model</button>
+    <span class="progress">5 of 12</span>
+    <button class="btn primary" onclick="show(5)">Research workflow →</button>
+  </div>
+</div>
+
+<!-- 5: Research -->
+<div class="section" id="s5">
+  <div class="section-tag">Using Claude</div>
+  <h1>Research workflow</h1>
+  <p class="lead">Always research before building. Even if you think you know enough.</p>
+  <hr class="divider">
+  <div class="workflow-row">
+    <div class="workflow-step">Research</div><div class="workflow-arrow">→</div>
+    <div class="workflow-step">Plan</div><div class="workflow-arrow">→</div>
+    <div class="workflow-step">Build</div><div class="workflow-arrow">→</div>
+    <div class="workflow-step">Iterate</div>
+  </div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Give Claude a clear scope</h4><p>Don't say "research X." Say: <em>"Research the top 5 competitors in [space], what technology they use, their pricing model, and where they're weak."</em></p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Feed it sources yourself</h4><p>Claude is better at analysis than discovery. If you've found a useful article or competitor site, paste the URL in. Don't rely on Claude to find everything.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Save output as a markdown file</h4><p>Ask Claude to save research to your Obsidian vault. Searchable later, referenceable in future chats, and it reduces token waste downstream.</p></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Enable web search</h4><p>Toggle it on in Claude.ai for research tasks. Claude's training has a cutoff — web search gives it live sources.</p></div></div>
+  <div class="callout red"><p><strong>Watch out for:</strong> Claude hallucinating competitor details, pricing, or sources. Always verify specific claims before acting on them.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(4)">← Chat & planning</button>
+    <span class="progress">6 of 12</span>
+    <button class="btn primary" onclick="show(6)">File & project setup →</button>
+  </div>
+</div>
+
+<!-- 6: File setup -->
+<div class="section" id="s6">
+  <div class="section-tag">Using Claude</div>
+  <h1>File and project setup</h1>
+  <p class="lead">Claude can create and organise files on your machine. Use this to start projects right rather than doing it manually.</p>
+  <hr class="divider">
+  <div class="callout"><p><em>"I'm starting a freelance design studio. Create a local file structure for managing client projects, proposals, assets, and invoices. Save it to ~/Documents/Studio."</em></p></div>
+  <div class="card-grid">
+    <div class="card"><h4>New businesses</h4><p style="font-size:13px;">Tell Claude your model and it'll suggest the folders and files you actually need.</p></div>
+    <div class="card"><h4>Client work</h4><p style="font-size:13px;">Set up a consistent structure and replicate it for every new engagement.</p></div>
+    <div class="card"><h4>Side projects</h4><p style="font-size:13px;">Research notes, experiment logs, ideas — organised from day one.</p></div>
+    <div class="card"><h4>Trackers and spreadsheets</h4><p style="font-size:13px;">Ask Claude to generate expense trackers, budgets, or timelines as <code>.xlsx</code> files.</p></div>
+  </div>
+  <div class="callout green"><p><strong>Platform-agnostic notes:</strong> Markdown files work with any tool — your notes and context stay with you even if you switch platforms.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(5)">← Research workflow</button>
+    <span class="progress">7 of 12</span>
+    <button class="btn primary" onclick="show(7)">Token management →</button>
+  </div>
+</div>
+
+<!-- 7: Token management -->
+<div class="section" id="s7">
+  <div class="section-tag">Power features</div>
+  <h1>Token management</h1>
+  <p class="lead">This is the section most people skip — and it's the one that costs them the most. Claude is geared to use tokens, and you need to be strict about how and when it does.</p>
+  <hr class="divider">
+  <h2>How tokens actually work</h2>
+  <p>Every message uses tokens (roughly one word = one token). What most people miss: <strong style="color:var(--text)">every single prompt includes your entire conversation history.</strong></p>
+  <div class="token-meter">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:0.75rem;">Token cost per message as a conversation grows</p>
+    <div class="token-bar-wrap"><div class="token-bar" style="width:55px;background:var(--accent2);"></div><span class="token-bar-label">Message 1 — just your prompt</span></div>
+    <div class="token-bar-wrap"><div class="token-bar" style="width:130px;background:var(--accent);"></div><span class="token-bar-label">Message 3 — prompt + 2 full exchanges resent</span></div>
+    <div class="token-bar-wrap"><div class="token-bar" style="width:220px;background:var(--accent3);"></div><span class="token-bar-label">Message 5 — now burning credits fast</span></div>
+    <div class="token-bar-wrap"><div class="token-bar" style="width:320px;background:#8B1F1F;"></div><span class="token-bar-label">Message 10+ — most of each message is dead history</span></div>
+  </div>
+  <div class="warn-box"><p><strong>After 4–5 replies in a single chat, you're spending most of each message just resending history.</strong> Long threads don't make Claude smarter — they make it slower and more expensive.</p></div>
+  <h2>How to fix it</h2>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Start new chats often</h4><p>A new chat doesn't mean starting from scratch — it means not carrying dead weight. One topic per chat.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Use your MD files as context</h4><p>Keep a well-maintained <code>brief.md</code> per project. At the start of a new chat: <em>"Read my project brief at ~/Vault/ProjectX/brief.md before we start."</em> Claude gets full context instantly. This is how you start fresh without starting over.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Keep documents lean</h4><p>Don't paste entire codebases or long docs — summarise first and let Claude ask if it needs more.</p></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Use skills instead of repeating yourself</h4><p>If you're explaining your brand voice or project requirements in every chat — that's wasted tokens. Write it once as a skill file and reference it.</p></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><h4>Pick the right model</h4><p>Haiku costs a fraction of Opus. Burning Opus tokens on email summaries or low-stakes tasks is the fastest way to hit your limits.</p></div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content">
+    <h4>Developers: use RTK (Rust Token Killer)</h4>
+    <p>Specifically built to significantly reduce tokens used in Claude Code sessions. If you're running Claude Code regularly, it's a meaningful saving.</p>
+    <a class="tool-link" href="https://github.com/drbh/rtk" target="_blank">→ RTK on GitHub</a>
+  </div></div>
+  <div class="callout green"><p><strong>The mindset shift:</strong> Starting a new chat isn't starting over. If your markdown files are up to date, Claude picks up exactly where you left off — with a clean context window and no wasted history.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(6)">← File & project setup</button>
+    <span class="progress">8 of 12</span>
+    <button class="btn primary" onclick="show(8)">Skills & repositories →</button>
+  </div>
+</div>
+
+<!-- 8: Skills & Repos -->
+<div class="section" id="s8">
+  <div class="section-tag">Power features</div>
+  <h1>Skills and repositories</h1>
+  <p class="lead">Skills are reusable instruction files that tell Claude how to behave for specific tasks. Don't build them all from scratch — there are public repositories with thousands already made.</p>
+  <hr class="divider">
+  <h2>Finding skills</h2>
+  <div class="skill-repo-card">
+    <h4>skills.sh — the open agent skills directory</h4>
+    <p>A leaderboard of publicly available skills with install counts, GitHub repo links, and compatibility info. Browse by category or sort by stars to find what's well-used and trusted.</p>
+    <a class="tool-link" href="https://skills.sh" target="_blank">→ skills.sh</a>
+  </div>
+  <div class="skill-repo-card">
+    <h4>MCP Market — skills for Claude</h4>
+    <p>Another directory specifically focused on Claude-compatible skills and MCP integrations. Good for finding skills that work with specific tools and workflows.</p>
+    <a class="tool-link" href="https://mcpmarket.com/tools/skills" target="_blank">→ mcpmarket.com/tools/skills</a>
+  </div>
+  <div class="skill-repo-card">
+    <h4>Awesome MCP Servers</h4>
+    <p>Community-curated list of MCP server configs covering databases, APIs, and local tools. The go-to starting point for MCP setup.</p>
+    <a class="tool-link" href="https://github.com/punkpeye/awesome-mcp-servers" target="_blank">→ github.com/punkpeye/awesome-mcp-servers</a>
+  </div>
+  <div class="skill-repo-card">
+    <h4>Anthropic official skills</h4>
+    <p>Anthropic's own skills repository on GitHub — these are the reference implementations and include skills for Claude Code, document creation, design, and more.</p>
+    <a class="tool-link" href="https://github.com/modelcontextprotocol" target="_blank">→ github.com/modelcontextprotocol</a>
+    <a class="tool-link" href="https://claude.ai/settings/connectors" target="_blank">→ Claude connectors directory</a>
+  </div>
+  <hr class="divider">
+  <h2>How to install a skill</h2>
+  <div class="install-steps">
+    <div class="install-step"><div class="install-step-num">1</div><p><strong style="color:var(--text);">Browse and find one.</strong> Go to skills.sh or MCPMarket. Check the star count on its GitHub repo — high stars means lots of people have used and validated it.</p></div>
+    <div class="install-step"><div class="install-step-num">2</div><p><strong style="color:var(--text);">Read what it does.</strong> Look at the skill's README before installing. Make sure it actually fits your use case — don't just grab the most popular one.</p></div>
+    <div class="install-step"><div class="install-step-num">3</div><p><strong style="color:var(--text);">Install option A — give Claude the GitHub URL.</strong> Tell Claude: <em>"Download and install the skill from github.com/owner/repo"</em> and it will fetch and set it up for you.</p></div>
+    <div class="install-step"><div class="install-step-num">4</div><p><strong style="color:var(--text);">Install option B — download the zip yourself.</strong> Download the repo as a zip from GitHub and attach it to a Claude chat. Tell Claude to extract and install it into your skills folder.</p></div>
+    <div class="install-step"><div class="install-step-num">5</div><p><strong style="color:var(--text);">Test it before relying on it.</strong> Use an example prompt relevant to your actual work. Does it behave the way you expected? If not, adjust or try a different skill.</p></div>
+  </div>
+  <div class="callout green"><p><strong>Star count is your quality signal.</strong> On GitHub and skills.sh, more stars = more people have used it and found it valuable. Don't install skills with very few stars without reading them carefully first.</p></div>
+  <hr class="divider">
+  <h2>Build your own — starter skills</h2>
+  <div class="tip-grid">
+    <div class="tip-card"><div class="label">Brand voice</div><p>Tone, language rules, what to avoid, example sentences</p></div>
+    <div class="tip-card"><div class="label">Research template</div><p>Output format, sources to check, sections to always cover</p></div>
+    <div class="tip-card"><div class="label">Code style</div><p>Languages, formatting rules, naming conventions</p></div>
+    <div class="tip-card"><div class="label">Client profile</div><p>Who they are, what they care about, language preferences</p></div>
+    <div class="tip-card"><div class="label">Ad copy rules</div><p>Character limits, CTA patterns, what's worked before</p></div>
+    <div class="tip-card"><div class="label">Token habits</div><p>Model defaults, chat scoping rules, when to start fresh</p></div>
+  </div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(7)">← Token management</button>
+    <span class="progress">9 of 12</span>
+    <button class="btn primary" onclick="show(9)">MCPs & connectors →</button>
+  </div>
+</div>
+
+<!-- 9: MCPs & Connectors -->
+<div class="section" id="s9">
+  <div class="section-tag">Power features</div>
+  <h1>MCPs and connectors</h1>
+  <p class="lead">MCPs let Claude connect directly to your tools. Instead of copy-pasting between apps, Claude reads from and writes to them directly. This is where the desktop app gets genuinely powerful.</p>
+  <hr class="divider">
+  <h2>Installing connectors</h2>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Open Settings in the desktop app</h4><p>Go to Settings → Connectors. You'll see all available integrations with one-click setup.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Connect your most-used tools first</h4><p>Gmail and Google Drive are useful for almost everyone. Add more as you find the need.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Use them naturally in conversation</h4><p>Once connected, just reference the tool: <em>"Check my Gmail for anything urgent this week and give me a summary."</em></p></div></div>
+  <hr class="divider">
+  <h2>Most useful connectors</h2>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(212,169,106,0.1);">✉</div>
+    <div class="connector-info">
+      <h4>Gmail</h4>
+      <p>Claude reads your inbox, summarises what's happening, drafts replies, flags important threads, and writes outgoing emails. Ask for a morning briefing and it'll surface what actually needs your attention — great for high-volume inboxes.</p>
+    </div>
+  </div>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(123,158,135,0.1);">▤</div>
+    <div class="connector-info">
+      <h4>Google Drive</h4>
+      <p>Claude sees all your Drive files — reads docs, summarises reports, references old proposals, and creates new files directly. No exporting, no copy-pasting. Especially useful when starting a new client project and you want Claude to read existing work for context.</p>
+    </div>
+  </div>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(192,112,112,0.1);">◫</div>
+    <div class="connector-info">
+      <h4>Google Calendar</h4>
+      <p>Check upcoming meetings, draft prep notes, suggest scheduling blocks, and plan your week around existing commitments.</p>
+    </div>
+  </div>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(255,255,255,0.05);">⬜</div>
+    <div class="connector-info">
+      <h4>Notion / Linear</h4>
+      <p>Read and create tasks, update project docs, pull in context from your workspace — Claude becomes a genuine project management assistant.</p>
+    </div>
+  </div>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(212,169,106,0.06);">⧉</div>
+    <div class="connector-info">
+      <h4>HubSpot</h4>
+      <p>Connect Claude to your CRM and ask it to read contact histories, analyse pipeline health, identify follow-up gaps, and diagnose why deals are stalling. Sales teams can get analysis without logging into HubSpot and running manual reports.</p>
+    </div>
+  </div>
+  <div class="connector-card">
+    <div class="connector-icon" style="background:rgba(123,158,135,0.06);">◎</div>
+    <div class="connector-info">
+      <h4>GitHub</h4>
+      <p>Review PRs, search issues, read repo contents — without leaving Claude. Pairs well with Claude Code for developers.</p>
+    </div>
+  </div>
+  <div class="callout"><p><strong>Advanced:</strong> You can run local MCP servers to connect Claude to tools without official connectors. See the skills repositories section for community-built options covering dozens of additional services.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(8)">← Skills & repositories</button>
+    <span class="progress">10 of 12</span>
+    <button class="btn primary" onclick="show(10)">Claude Code →</button>
+  </div>
+</div>
+
+<!-- 10: Claude Code -->
+<div class="section" id="s10">
+  <div class="section-tag">Power features</div>
+  <h1>Claude Code</h1>
+  <p class="lead">A command-line tool that gives Claude direct access to your codebase. It reads files, writes code, runs commands, and iterates — all from your terminal.</p>
+  <hr class="divider">
+  <div class="card-grid">
+    <div class="card highlight"><h4>What Claude Code can do</h4><p style="font-size:13px;">Read your entire codebase for context, write and edit files directly, run terminal commands, debug errors, refactor code, write tests, and explain every step.</p></div>
+    <div class="card"><h4>What it's not for</h4><p style="font-size:13px;">Quick one-off questions or tasks that don't involve a codebase. For those, use regular Claude chat with Sonnet.</p></div>
+  </div>
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Install via terminal</h4><p>Run <code>npm install -g @anthropic-ai/claude-code</code>. Requires Node.js.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Navigate to your project</h4><p>Open a terminal in your project folder and run <code>claude</code>. Claude Code reads your project structure automatically.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Give it a task</h4><p><em>"Add input validation to the login form"</em> or <em>"Why is this function returning undefined?"</em></p></div></div>
+  <div class="callout green"><p><strong>Good use cases:</strong> building features, refactoring, writing tests, migrating frameworks, debugging tricky errors, spinning up new projects from scratch.</p></div>
+  <div class="callout red"><p><strong>Token note:</strong> Claude Code burns through tokens quickly. Use RTK (Rust Token Killer) to significantly reduce usage. Keep git commits small so you can revert if something goes wrong.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(9)">← MCPs & connectors</button>
+    <span class="progress">11 of 12</span>
+    <button class="btn primary" onclick="show(11)">Tips & habits →</button>
+  </div>
+</div>
+
+<!-- 11: Tips -->
+<div class="section" id="s11">
+  <div class="section-tag">Wrapping up</div>
+  <h1>Tips and habits</h1>
+  <p class="lead">The things that separate people who get average results from those who get genuinely good ones.</p>
+  <hr class="divider">
+  <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Always research before building</h4><p>Even if you think you know enough. The research step surfaces blind spots and gives Claude context for better output downstream.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Give Claude references, not just instructions</h4><p>If you want a website redesigned, show it examples. If you want copy in a certain tone, paste a sample. Claude works better with models to reference than abstract descriptions alone — especially for design and style work.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Push back when something's not right</h4><p>Claude isn't always correct on the first try. Be specific: <em>"The tone is too formal — rewrite this like you're talking to a friend."</em></p></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Build skills for recurring work</h4><p>Anything you explain more than twice should be a skill file. Write it once, reference it forever.</p></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><h4>Keep conversations scoped</h4><p>One topic per chat. Mixing unrelated projects in one thread wastes tokens on irrelevant history and dilutes Claude's focus.</p></div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content"><h4>Treat Sonnet as your default</h4><p>Reach for Opus only when you genuinely need deep reasoning on a complex decision. Everything else — Sonnet.</p></div></div>
+  <div class="step"><div class="step-num">7</div><div class="step-content"><h4>Maintain your markdown files</h4><p>An up-to-date <code>brief.md</code> means any new chat can get full context instantly. This is the whole system working as intended.</p></div></div>
+  <div class="step"><div class="step-num">8</div><div class="step-content"><h4>Use memory intentionally</h4><p>Tell Claude the things you want it to remember: your role, your vault path, your output preferences. Saves time and tokens across every session.</p></div></div>
+  <div class="callout green"><p><strong>You're set.</strong> Work through the guide, start with the basics, and layer in MCPs, skills, and Claude Code when you're ready. The best way to learn Claude is to use it daily.</p></div>
+  <div class="next-btn">
+    <button class="btn" onclick="show(10)">← Claude Code</button>
+    <span class="progress">12 of 12</span>
+    <button class="btn primary" disabled>Complete ✓</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div style="position:fixed;bottom:0;left:220px;right:0;background:rgba(13,13,13,0.95);border-top:0.5px solid rgba(255,255,255,0.08);padding:12px 3.5rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(8px);z-index:100;">
+  <span style="font-size:12px;color:#888880;">Built by <strong style="color:#F0EDE8;">Basti Farrell</strong> — strategist & builder, Cape Town</span>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a href="https://www.linkedin.com/in/bastifarrell" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#D4A96A;text-decoration:none;border:0.5px solid rgba(212,169,106,0.3);padding:5px 12px;border-radius:100px;transition:background 0.15s;" onmouseover="this.style.background='rgba(212,169,106,0.08)'" onmouseout="this.style.background='transparent'">
+      LinkedIn →
+    </a>
+    <a href="https://github.com/Seabass567/claude-setup" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#888880;text-decoration:none;border:0.5px solid rgba(255,255,255,0.1);padding:5px 12px;border-radius:100px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='transparent'">
+      GitHub →
+    </a>
+  </div>
+</div>
+
+<script>
+const navItems = document.querySelectorAll('.nav-item');
+const sections = document.querySelectorAll('.section');
+function show(i) {
+  sections.forEach((s,idx) => s.classList.toggle('active', idx===i));
+  navItems.forEach((n,idx) => n.classList.toggle('active', idx===i));
+  document.querySelector('.main').scrollTop = 0;
+}
+</script>
+</body>
+</html>
