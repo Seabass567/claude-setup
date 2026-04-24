@@ -376,16 +376,41 @@
 <div class="section" id="s6">
   <div class="section-tag">Using Claude</div>
   <h1>File and project setup</h1>
-  <p class="lead">Claude can create and organise files on your machine. Use this to start projects right rather than doing it manually.</p>
+  <p class="lead">Claude has three modes for working with files. Knowing which to use makes the difference between fast and frustrating.</p>
   <hr class="divider">
-  <div class="callout"><p><em>"I'm starting a freelance design studio. Create a local file structure for managing client projects, proposals, assets, and invoices. Save it to ~/Documents/Studio."</em></p></div>
+
+  <h2>Co-work — the right tool for file setup</h2>
+  <p>Co-work (desktop app only) gives Claude direct access to your local files and folders. This is what you want for creating project structures, writing and editing documents, and generating spreadsheets. It works on your machine, not in the chat window.</p>
+  <div class="callout blue"><p><em>"I'm starting a freelance design studio. Create a folder structure at ~/Documents/Studio for client projects, proposals, assets, and invoices — then generate a client tracker spreadsheet in the root."</em></p></div>
   <div class="card-grid">
-    <div class="card"><h4>New businesses</h4><p style="font-size:13px;">Tell Claude your model and it'll suggest the folders and files you actually need.</p></div>
-    <div class="card"><h4>Client work</h4><p style="font-size:13px;">Set up a consistent structure and replicate it for every new engagement.</p></div>
-    <div class="card"><h4>Side projects</h4><p style="font-size:13px;">Research notes, experiment logs, ideas — organised from day one.</p></div>
-    <div class="card"><h4>Trackers and spreadsheets</h4><p style="font-size:13px;">Ask Claude to generate expense trackers, budgets, or timelines as <code>.xlsx</code> files.</p></div>
+    <div class="card highlight">
+      <h4>Folder structures</h4>
+      <p style="font-size:13px;">Describe your business or project type. Co-work creates the folders, subfolders, and starter files — ready to use immediately.</p>
+    </div>
+    <div class="card highlight">
+      <h4>Spreadsheets and trackers</h4>
+      <p style="font-size:13px;">Ask for expense trackers, project timelines, or client logs as <code>.xlsx</code> files. Co-work writes them directly to your machine.</p>
+    </div>
+    <div class="card highlight">
+      <h4>Markdown notes and briefs</h4>
+      <p style="font-size:13px;">Project briefs, research summaries, meeting notes — saved as <code>.md</code> files in your Obsidian vault, readable in any tool.</p>
+    </div>
+    <div class="card highlight">
+      <h4>Replicating structures</h4>
+      <p style="font-size:13px;">Set up a structure once for one client or project, then ask Co-work to copy and rename it for every new engagement.</p>
+    </div>
   </div>
-  <div class="callout green"><p><strong>Platform-agnostic notes:</strong> Markdown files work with any tool — your notes and context stay with you even if you switch platforms.</p></div>
+
+  <hr class="divider">
+  <h2>Chat — planning before you build</h2>
+  <p>Before touching files, use regular Claude chat to figure out what you actually need. Chat is fast and cheap — use it to think through the structure before Co-work builds it.</p>
+  <div class="callout"><p><em>"I'm setting up a solo consulting business. What folder structure would you recommend for managing clients, proposals, contracts, and invoices? I'll use Obsidian for notes."</em></p></div>
+
+  <hr class="divider">
+  <h2>Claude Code — for developers</h2>
+  <p>If you're working in a codebase, Claude Code is the right tool. It reads your entire project, scaffolds new features, creates config files, and sets up environments — all from the terminal. See the Claude Code section for setup.</p>
+
+  <div class="callout green"><p><strong>Platform-agnostic notes:</strong> Always save project notes as <code>.md</code> files. They work in any tool — Obsidian, Notion, VS Code — and you're never locked to one platform.</p></div>
   <div class="next-btn">
     <button class="btn" onclick="show(5)">← Research workflow</button>
     <span class="progress">7 of 12</span>
