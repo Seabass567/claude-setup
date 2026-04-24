@@ -109,22 +109,25 @@
   .install-step-num { font-size: 11px; font-weight: 500; color: var(--accent); min-width: 18px; margin-top: 2px; }
   .install-step p { font-size: 12px; margin: 0; }
 
-  /* Hamburger button — hidden on desktop */
-  .hamburger { display: none; position: fixed; top: 14px; left: 14px; z-index: 300; background: var(--bg2); border: 0.5px solid var(--border2); color: var(--text); font-size: 20px; line-height: 1; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; align-items: center; justify-content: center; }
+  /* Mobile top bar — hidden on desktop */
+  .mobile-header { display: none; position: fixed; top: 0; left: 0; right: 0; height: 52px; background: var(--bg2); border-bottom: 0.5px solid var(--border); z-index: 300; align-items: center; padding: 0 1rem; gap: 12px; }
+  .hamburger { background: none; border: none; color: var(--text); font-size: 22px; line-height: 1; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+  .mobile-title { font-family: var(--font-display); font-size: 15px; color: var(--text); }
 
   /* Overlay behind open sidebar on mobile */
-  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 150; }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 250; }
   .sidebar-overlay.visible { display: block; }
 
   @media (max-width: 768px) {
-    .hamburger { display: flex; }
-    .layout { grid-template-columns: 1fr; }
+    .mobile-header { display: flex; }
+    .layout { display: block; }
     .sidebar {
-      position: fixed; top: 0; left: 0; height: 100vh; width: 260px;
-      z-index: 200; transform: translateX(-100%); transition: transform 0.25s ease;
+      display: block; position: fixed; top: 0; left: 0; height: 100vh; width: 280px;
+      z-index: 300; transform: translateX(-100%); transition: transform 0.25s ease;
+      overflow-y: auto;
     }
     .sidebar.open { transform: translateX(0); }
-    .main { padding: 4.5rem 1.25rem 7rem; max-width: 100%; }
+    .main { padding: 68px 1.25rem 7rem; max-width: 100%; }
     h1 { font-size: 26px; }
     h2 { font-size: 18px; }
     .card-grid { grid-template-columns: 1fr; }
@@ -132,7 +135,7 @@
     .tip-grid { grid-template-columns: 1fr 1fr; }
     .model-table { font-size: 12px; }
     .model-table th, .model-table td { padding: 7px 8px; }
-    .footer-bar { left: 0 !important; padding-left: 1.25rem !important; padding-right: 1.25rem !important; flex-wrap: wrap; gap: 8px; }
+    .footer-bar { left: 0 !important; padding: 10px 1.25rem !important; flex-wrap: wrap; gap: 6px; }
     .footer-bar .footer-links { margin-left: auto; }
     .token-meter { overflow-x: auto; }
     .token-bar-wrap { flex-wrap: wrap; }
@@ -143,14 +146,17 @@
   @media (max-width: 420px) {
     .tip-grid { grid-template-columns: 1fr; }
     h1 { font-size: 22px; }
-    .main { padding: 4.5rem 1rem 7rem; }
+    .main { padding: 68px 1rem 7rem; }
   }
 
 </style>
 </head>
 <body>
 <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Basti's Claude Guide — interactive course covering setup, models, token management, connectors, skills, and Claude Code</h2>
-<button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+<div class="mobile-header">
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
+  <span class="mobile-title">Basti's Claude Guide</span>
+</div>
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 <div class="layout">
 <nav class="sidebar">
