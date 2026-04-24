@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Basti's Claude Guide</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -105,6 +108,10 @@
   .install-step:last-child { border-bottom: none; }
   .install-step-num { font-size: 11px; font-weight: 500; color: var(--accent); min-width: 18px; margin-top: 2px; }
   .install-step p { font-size: 12px; margin: 0; }
+
+  .card-icon::after { content: ''; display: block; width: 12px; height: 12px; border-radius: 3px; background: currentColor; opacity: 0.5; }
+  .connector-icon::after { content: ''; display: block; width: 14px; height: 14px; border-radius: 3px; background: var(--accent); opacity: 0.4; }
+
 </style>
 </head>
 <body>
@@ -143,28 +150,28 @@
   <div class="bootstrap-box">
     <h4>Don't want to read? Just do the setup automatically.</h4>
     <p>There's a one-paste bootstrap prompt that sets up your entire environment — Obsidian vault, skills folder, project structure, and Claude memory — in a single chat. Open Claude, paste it in, and it walks you through everything interactively.</p>
-    <a class="tool-link" href="https://raw.githubusercontent.com/Seabass567/claude-setup/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt</a>
+    <a class="tool-link" href="https://github.com/Seabass567/claude-setup/blob/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt</a>
   </div>
   <hr class="divider">
   <h2>What's in this guide</h2>
   <div class="card-grid">
     <div class="card highlight">
-      <div class="card-icon" style="background:rgba(212,169,106,0.12);">⚙</div>
+      <div class="card-icon" style="background:rgba(212,169,106,0.12);"></div>
       <h4>Setup</h4>
       <p>Web app vs desktop, what to install, how to configure your environment from day one.</p>
     </div>
     <div class="card">
-      <div class="card-icon" style="background:rgba(123,158,135,0.12);">◎</div>
+      <div class="card-icon" style="background:rgba(123,158,135,0.12);"></div>
       <h4>Choosing models</h4>
       <p>Opus, Sonnet, Haiku — when to use each and why getting this right matters.</p>
     </div>
     <div class="card">
-      <div class="card-icon" style="background:rgba(192,112,112,0.12);">◈</div>
+      <div class="card-icon" style="background:rgba(192,112,112,0.12);"></div>
       <h4>Token management</h4>
       <p>How Claude burns your credits and exactly how to stop wasting them.</p>
     </div>
     <div class="card">
-      <div class="card-icon" style="background:rgba(255,255,255,0.07);">↗</div>
+      <div class="card-icon" style="background:rgba(255,255,255,0.07);"></div>
       <h4>Power features</h4>
       <p>MCPs, connectors, skills repositories, Claude Code, and more.</p>
     </div>
@@ -184,7 +191,7 @@
   <div class="bootstrap-box">
     <h4>Shortcut: auto-setup with the bootstrap prompt</h4>
     <p>Rather than doing all of this manually, paste the bootstrap prompt into a fresh Claude desktop chat and it will handle steps 2–4 for you automatically — creating your vault structure, skill files, and saving your preferences to memory.</p>
-    <a class="tool-link" href="https://raw.githubusercontent.com/Seabass567/claude-setup/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt (claude-bootstrap.md)</a>
+    <a class="tool-link" href="https://github.com/Seabass567/claude-setup/blob/main/claude-bootstrap.md" target="_blank">→ Get the bootstrap prompt (claude-bootstrap.md)</a>
   </div>
   <hr class="divider">
   <div class="step">
@@ -491,42 +498,42 @@
   <hr class="divider">
   <h2>Most useful connectors</h2>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(212,169,106,0.1);">✉</div>
+    <div class="connector-icon" style="background:rgba(212,169,106,0.1);"></div>
     <div class="connector-info">
       <h4>Gmail</h4>
       <p>Claude reads your inbox, summarises what's happening, drafts replies, flags important threads, and writes outgoing emails. Ask for a morning briefing and it'll surface what actually needs your attention — great for high-volume inboxes.</p>
     </div>
   </div>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(123,158,135,0.1);">▤</div>
+    <div class="connector-icon" style="background:rgba(123,158,135,0.1);"></div>
     <div class="connector-info">
       <h4>Google Drive</h4>
       <p>Claude sees all your Drive files — reads docs, summarises reports, references old proposals, and creates new files directly. No exporting, no copy-pasting. Especially useful when starting a new client project and you want Claude to read existing work for context.</p>
     </div>
   </div>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(192,112,112,0.1);">◫</div>
+    <div class="connector-icon" style="background:rgba(192,112,112,0.1);"></div>
     <div class="connector-info">
       <h4>Google Calendar</h4>
       <p>Check upcoming meetings, draft prep notes, suggest scheduling blocks, and plan your week around existing commitments.</p>
     </div>
   </div>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(255,255,255,0.05);">⬜</div>
+    <div class="connector-icon" style="background:rgba(255,255,255,0.05);"></div>
     <div class="connector-info">
       <h4>Notion / Linear</h4>
       <p>Read and create tasks, update project docs, pull in context from your workspace — Claude becomes a genuine project management assistant.</p>
     </div>
   </div>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(212,169,106,0.06);">⧉</div>
+    <div class="connector-icon" style="background:rgba(212,169,106,0.06);"></div>
     <div class="connector-info">
       <h4>HubSpot</h4>
       <p>Connect Claude to your CRM and ask it to read contact histories, analyse pipeline health, identify follow-up gaps, and diagnose why deals are stalling. Sales teams can get analysis without logging into HubSpot and running manual reports.</p>
     </div>
   </div>
   <div class="connector-card">
-    <div class="connector-icon" style="background:rgba(123,158,135,0.06);">◎</div>
+    <div class="connector-icon" style="background:rgba(123,158,135,0.06);"></div>
     <div class="connector-info">
       <h4>GitHub</h4>
       <p>Review PRs, search issues, read repo contents — without leaving Claude. Pairs well with Claude Code for developers.</p>
@@ -588,9 +595,9 @@
 </div>
 
 <div style="position:fixed;bottom:0;left:220px;right:0;background:rgba(13,13,13,0.95);border-top:0.5px solid rgba(255,255,255,0.08);padding:12px 3.5rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(8px);z-index:100;">
-  <span style="font-size:12px;color:#888880;">Built by <strong style="color:#F0EDE8;">Basti Farrell</strong> — strategist & builder, Cape Town</span>
+  <span style="font-size:12px;color:#888880;">Made by <strong style="color:#F0EDE8;">Basti Farrell</strong> — strategist & builder, Cape Town</span>
   <div style="display:flex;align-items:center;gap:12px;">
-    <a href="https://www.linkedin.com/in/bastifarrell" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#D4A96A;text-decoration:none;border:0.5px solid rgba(212,169,106,0.3);padding:5px 12px;border-radius:100px;transition:background 0.15s;" onmouseover="this.style.background='rgba(212,169,106,0.08)'" onmouseout="this.style.background='transparent'">
+    <a href="https://www.linkedin.com/in/sebastian-farrell-b12838219/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#D4A96A;text-decoration:none;border:0.5px solid rgba(212,169,106,0.3);padding:5px 12px;border-radius:100px;transition:background 0.15s;" onmouseover="this.style.background='rgba(212,169,106,0.08)'" onmouseout="this.style.background='transparent'">
       LinkedIn →
     </a>
     <a href="https://github.com/Seabass567/claude-setup" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#888880;text-decoration:none;border:0.5px solid rgba(255,255,255,0.1);padding:5px 12px;border-radius:100px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='transparent'">
